@@ -1,71 +1,169 @@
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() => runApp(const BoooApp());
+void main() {
+  runApp(AppleMusicApp());
+}
 
-class BoooApp extends StatelessWidget {
-  const BoooApp({super.key});
+class AppleMusicApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Booo!!',
-      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Color(0xFF000000)),
-      home: const SplashScreen(),
+      home: BoooMusicHome(),
     );
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class BoooMusicHome extends StatefulWidget {
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<BoooMusicHome> createState() => _BoooMusicHomeState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _c;
+class _BoooMusicHomeState extends State<BoooMusicHome> with TickerProviderStateMixin {
+  late AnimationController _ghostController;
+  bool isPlaying = false;
+  int currentIndex = 0;
+
+  List<Map<String, String>> songs = [
+    {"title": "Blinding Lights", "artist": "The Weeknd", "img": "🌙"},
+    {"title": "Levitating", "artist": "Dua Lipa", "img": "👻"},
+    {"title": "Stay", "artist": "Justin Bieber", "img": "🎃"},
+    {"title": "Booo!! Anthem", "artist": "deadvishaal", "img": "💀"},
+  ];
+
   @override
   void initState() {
     super.initState();
-    _c = AnimationController(vsync: this, duration: Duration(milliseconds: 2200))..forward();
-    Timer(Duration(milliseconds: 2800), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
-    });
+    _ghostController = AnimationController(vsync: this, duration: Duration(seconds: 2))..repeat(reverse: true);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: ScaleTransition(
-          scale: CurvedAnimation(parent: _c, curve: Curves.elasticOut),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(width: 130, height: 130, decoration: BoxDecoration(color: Color(0xFFFA2F2F), borderRadius: BorderRadius.circular(32), boxShadow: [BoxShadow(color: Colors.red.withOpacity(0.4), blurRadius: 30)]), child: Icon(Icons.music_note_rounded, size: 70, color: Colors.white)),
-            SizedBox(height: 30),
-            Text('Booo!!', style: GoogleFonts.outfit(fontSize: 48, fontWeight: FontWeight.w900, color: Colors.white)),
-            SizedBox(height: 12),
-            Text('Developed by deadvishaal', style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-            SizedBox(height: 8),
-            Text('ADVANCED • HAUNTED • MUSIC', style: TextStyle(fontSize: 10, color: Colors.white54, letterSpacing: 3)),
-          ]),
+      backgroundColor: Color(0xFF0A0A0A),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Row(
+          children: [
+            FadeTransition(
+              opacity: _ghostController,
+              child: Text("👻", style: TextStyle(fontSize: 24)),
+            ),
+            SizedBox(width: 8),
+            Text("Booo!!", style: GoogleFonts.creepster(color: Colors.white, fontSize: 28, letterSpacing: 2)),
+          ],
         ),
+        actions: [Icon(Icons.search, color: Colors.white), SizedBox(width: 16)],
       ),
-    );
-  }
-}
+      body: Column(
+        children: [
+          // Ghost Header
+          Container(
+            margin: EdgeInsets.all(16),
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Color(0xFF1F1F1F), Color(0xFF2D2D2D)]),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white12),
+            ),
+            child: Row(
+              children: [
+                ScaleTransition(
+                  scale: Tween(begin: 0.9, end: 1.1).animate(CurvedAnimation(parent: _ghostController, curve: Curves.easeInOut)),
+                  child: Text("👻", style: TextStyle(fontSize: 50)),
+                ),
+                SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Booo!! Advanced", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text("Developed by deadvishaal", style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
+                    SizedBox(height: 4),
+                    Text("Spooky Vibes Only • 2026", style: GoogleFonts.poppins(color: Color(0xFFFF2D55), fontSize: 10, letterSpacing: 1)),
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-// Baaki HomeScreen wala code maine pehle wale me diya tha, wahi rahega
-class HomeScreen extends StatefulWidget { const HomeScreen({super.key}); @override State<HomeScreen> createState() => _HomeScreenState(); }
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  int currentIndex = 0; bool isPlaying = false;
-  @override
-  Widget build(BuildContext context){
-    return Scaffold(
-      appBar: AppBar(title: Text('Booo!!'), backgroundColor: Colors.black),
-      body: Center(child: Text('Welcome to Booo!! 👻', style: TextStyle(fontSize: 24))),
-      bottomSheet: Container(height: 100, color: Color(0xFF1C1C1E), child: Center(child: Text('Player by deadvishaal'))),
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              itemCount: songs.length,
+              itemBuilder: (context, index) {
+                bool selected = currentIndex == index;
+                return GestureDetector(
+                  onTap: () => setState(() { currentIndex = index; isPlaying = true; }),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: selected ? Color(0xFFFF2D55).withOpacity(0.15) : Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: selected ? Color(0xFFFF2D55) : Colors.transparent),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 50, height: 50,
+                          decoration: BoxDecoration(color: Color(0xFF2A2A2A), borderRadius: BorderRadius.circular(10)),
+                          child: Center(child: Text(songs[index]["img"]!, style: TextStyle(fontSize: 24))),
+                        ),
+                        SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(songs[index]["title"]!, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
+                            Text(songs[index]["artist"]!, style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
+                          ],
+                        ),
+                        Spacer(),
+                        Icon(selected && isPlaying ? Icons.pause_circle : Icons.play_circle, color: selected ? Color(0xFFFF2D55) : Colors.white38, size: 30),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // Player Bar
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Color(0xFF1F1F1F), borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(songs[currentIndex]["img"]!, style: TextStyle(fontSize: 20)),
+                    SizedBox(width: 10),
+                    Text(songs[currentIndex]["title"]!, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () => setState(() => isPlaying = !isPlaying),
+                      child: Icon(isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 32),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Center(child: Text("Developed by deadvishaal 👻", style: GoogleFonts.poppins(color: Colors.white24, fontSize: 10))),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        selectedItemColor: Color(0xFFFF2D55),
+        unselectedItemColor: Colors.white38,
+        currentIndex: 0,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.library_music), label: "Booo!!"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "deadvishaal"),
+        ],
+      ),
     );
   }
 }
