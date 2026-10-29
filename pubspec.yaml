@@ -1,21 +1,23 @@
-name: apple_music_clone
-description: Booo!! Advanced - Developed by deadvishaal
+name: booo_advanced
+description: Booo!! Advanced v3 Streaming - Developed by deadvishaal
 publish_to: 'none'
-version: 1.0.0+1
+version: 3.0.0+3
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
   google_fonts: ^6.1.0
+  just_audio: ^0.9.36
+  youtube_explode_dart: ^2.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
